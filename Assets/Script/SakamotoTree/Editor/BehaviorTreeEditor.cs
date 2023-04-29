@@ -32,6 +32,7 @@ public class BehaviorTreeEditor : EditorWindow
         root.styleSheets.Add(styleSheet);
 
         _treeView = root.Q<BehaviourTreeView>();
+        _treeView.SetEditorWindow(this);
         _treeView.OnNodeSelected = OnNodeSelectionChanged;
         _inspectorView = root.Q<InspectorView>();
 

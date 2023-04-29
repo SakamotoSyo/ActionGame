@@ -27,6 +27,18 @@ public class BehaviourTreeView : GraphView
         styleSheets.Add(styleSheet);
     }
 
+    public void SetEditorWindow(EditorWindow editorWindow) 
+    {
+        var menuWindowProvider = ScriptableObject.CreateInstance<SearchMenuWindowProvider>();
+        Debug.Log(editorWindow);
+        menuWindowProvider.Init(this, editorWindow);
+        nodeCreationRequest += context =>
+        {
+            Debug.Log("ƒƒjƒ…[‚ðŠJ‚­");
+            SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), menuWindowProvider);
+        };
+    }
+
     private NodeView FindNodeView(Node node) 
     {
         return GetNodeByGuid(node.Guid) as NodeView;
@@ -101,6 +113,7 @@ public class BehaviourTreeView : GraphView
         {
             graphViewChange.edgesToCreate.ForEach(edge =>
             {
+                Debug.Log("‚Â‚È‚¢‚¾");
                 NodeView parentView = edge.output.node as NodeView;
                 NodeView childView = edge.input.node as NodeView;
                 _tree.AddChild(parentView.Node, childView.Node);
@@ -115,34 +128,25 @@ public class BehaviourTreeView : GraphView
     /// <param name="evt"></param>
     public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
     {
-        //base.BuildContextualMenu(evt);
-        {
-            var types = TypeCache.GetTypesDerivedFrom<ActionNode>();
-            foreach (var type in types)
-            {
-                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", a => CreateNode(type));
-            }
-        }
-
-        {
-            var types = TypeCache.GetTypesDerivedFrom<ConditionNode>();
-            foreach (var type in types)
-            {
-                evt.menu.AppendAction($"[{type.BaseType.Name}] {type.Name}", a => CreateNode(type));
-            }
-        }
+        base.BuildContextualMenu(evt);
     }
 
-    private void CreateNode(Type type)
+    public void CreateNode(Type type, Rect grid) 
     {
-        Debug.Log(type);
         Node node = _tree.CreateNode(type);
-        CreateNodeView(node);
+        CreateNodeView(node, grid);
     }
-
     private void CreateNodeView(Node node)
     {
         NodeView nodeView = new NodeView(node);
+        nodeView.OnNodeSelected = OnNodeSelected;
+        AddElement(nodeView);
+    }
+
+    private void CreateNodeView(Node node, Rect rect) 
+    {
+        NodeView nodeView = new NodeView(node);
+        nodeView.SetPosition(rect);
         nodeView.OnNodeSelected = OnNodeSelected;
         AddElement(nodeView);
     }

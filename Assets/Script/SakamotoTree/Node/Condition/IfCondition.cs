@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class IfCondition : ConditionNode
 {
+    public int dadadada = 0;
     protected override void OnExit(Environment env)
     {
         throw new System.NotImplementedException();

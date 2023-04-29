@@ -22,6 +22,7 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
 
         CreateInputPorts();
         CreateOutputPorts();
+        Node.CurrentState += StateSetColor;
     }
 
     /// <summary>
@@ -37,10 +38,15 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
         {
             Input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(bool));
         }
+        else if (Node is DecoratorNode) 
+        {
+            Input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(bool));
+        }
 
         if (Input != null) 
         {
             Input.portName = "";
+            Input.portColor = Color.red;
             inputContainer.Add(Input);
         }
     }
@@ -51,15 +57,15 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
     private void CreateOutputPorts() 
     {
         //ÇªÇÍÇºÇÍÇÃOutputPortÇçÏê¨
-        if (Node is ActionNode)
-        {
-          
-        }
-        else if (Node is ConditionNode) 
+        if (Node is ConditionNode)
         {
             Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(bool));
         }
         else if (Node is RootNode)
+        {
+            Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+        }
+        else if (Node is DecoratorNode) 
         {
             Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
         }
@@ -78,9 +84,22 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
         Node.Position.y = newPos.yMin;
     }
 
+    public void StateSetColor(Node.State state) 
+    {
+        if (state == Node.State.Running)
+        {
+            this.inputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);
+            this.outputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);
+        }
+        else 
+        {
+            this.inputContainer.style.backgroundColor = new Color(0.25f, 0.25f, 0.25f);
+            this.outputContainer.style.backgroundColor = new Color(0.25f, 0.25f, 0.25f);
+        }
+    }
+
     public override void OnSelected()
     {
-        Debug.Log("åƒÇŒÇÍÇΩ");
         base.OnSelected();
         if (OnNodeSelected != null) 
         {

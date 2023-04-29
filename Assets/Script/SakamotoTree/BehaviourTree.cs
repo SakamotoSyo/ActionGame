@@ -54,6 +54,13 @@ public class BehaviourTree : ScriptableObject
         {
             rootNode.Child = child;
         }
+
+        DecoratorNode decoratorNode = parent as DecoratorNode;
+        if (decoratorNode) 
+        {
+       
+            decoratorNode.Child = child;
+        }
     }
 
     public void RemoveChild(Node parent, Node child) 
@@ -69,6 +76,14 @@ public class BehaviourTree : ScriptableObject
         if (rootNode)
         {
             rootNode.Child = null;
+        }
+
+
+        DecoratorNode decoratorNode = parent as DecoratorNode;
+        if (decoratorNode)
+        {
+
+            decoratorNode.Child = null;
         }
     }
 
@@ -87,6 +102,12 @@ public class BehaviourTree : ScriptableObject
         if (rootNode && rootNode.Child != null)
         {
             children.Add(rootNode.Child);
+        }
+
+        DecoratorNode decoratorNode = parent as DecoratorNode;
+        if (decoratorNode && decoratorNode.Child != null) 
+        {
+            children.Add(decoratorNode.Child);
         }
 
         return children;

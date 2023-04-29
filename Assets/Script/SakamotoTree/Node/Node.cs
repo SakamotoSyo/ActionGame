@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public abstract class Node : ScriptableObject
 {
@@ -10,9 +11,10 @@ public abstract class Node : ScriptableObject
         Failure,
         Success
     }
-
-    private State _state = State.Running;
-    private bool _started = false;
+   public Action<State> CurrentState; 
+   [NonSerialized] private State sendState = State.Failure;
+   [NonSerialized] private State _state = State.Running;
+   [NonSerialized] private bool _started = false;
     public string Guid;
     public Vector2 Position;
 
@@ -31,6 +33,8 @@ public abstract class Node : ScriptableObject
             OnExit(env);
             _started = false;
         }
+
+            CurrentState?.Invoke(_state);
 
         return _state;
     }

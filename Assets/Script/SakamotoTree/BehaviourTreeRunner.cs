@@ -10,7 +10,8 @@ public class BehaviourTreeRunner : MonoBehaviour
 
     private void Start()
     {
-        _env.mySelf = _player;
+        _env.mySelf = this.gameObject;
+        _env.target = _player;
     }
 
     private void Update()
