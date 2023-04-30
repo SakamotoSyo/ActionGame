@@ -5,13 +5,13 @@ using UnityEngine;
 [System.Serializable]
 public class PlayerMove
 {
-    [SerializeField] GameObject _mainCamera;
-    [SerializeField] float _moveSpeed;
-    [SerializeField] GameObject _lookAtObj;
+    [SerializeField] private GameObject _mainCamera;
+    [SerializeField] private float _moveSpeed;
+    [SerializeField] private GameObject _lookAtObj;
+    [SerializeField] private Rigidbody _rb;
 
-    Transform _transform;
+    [SerializeField]Transform _transform;
     Vector3 _dir = new Vector3(0, 0, 0);
-    Rigidbody _rb;
 
     public void Init()
     {
@@ -20,7 +20,7 @@ public class PlayerMove
     
     public void Update()
     {
-        
+        Move();
     }
 
     public void FixedUpdate() 
@@ -30,7 +30,9 @@ public class PlayerMove
 
     private void Move() 
     {
-        _dir = new Vector3(_inputManagerIns.MoveDir.x, 0, _inputManagerIns.MoveDir.y);
+        var x = Input.GetAxisRaw("Horizontal");
+        var y = Input.GetAxisRaw("Vertical");
+        _dir = new Vector3(x, 0, y);
         _dir = _mainCamera.transform.TransformDirection(_dir);
 
         _dir.y = 0;

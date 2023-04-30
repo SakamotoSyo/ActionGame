@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private PlayerMove _playerMove;
+    [SerializeField] private PlayerMove _playerMove = new();
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +15,6 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        _playerMove.Update();
     }
 }
