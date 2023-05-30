@@ -157,7 +157,7 @@ MonoBehaviour:
   m_Name: Sequence
   m_EditorClassIdentifier: 
   Guid: 8073e74f91f09034aab620ef29f3aa57
-  Position: {x: 388.8, y: 160.00002}
+  Position: {x: 393.60007, y: 160.00003}
   NodeChildren:
   - {fileID: 3607876112323355282}
   - {fileID: 8330050745359504799}

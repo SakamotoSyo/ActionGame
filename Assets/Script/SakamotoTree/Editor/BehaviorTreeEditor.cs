@@ -11,28 +11,30 @@ public class BehaviorTreeEditor : EditorWindow
     private BehaviourTreeView _treeView;
     private InspectorView _inspectorView;
 
-    [MenuItem("BehaviorTreeEditor/ Editor")]
-    public static void OpenWindow()
-    {
-        BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
-        wnd.titleContent = new GUIContent("BehaviorTreeEditor");
-        Undo.undoRedoPerformed += () =>
-        {
-            
-        };
-    }
-
-    //[OnOpenAsset(0)]
-    //public static bool OnBaseGraphOpened(int instanceID, int line)
+    //[MenuItem("BehaviorTreeEditor/ Editor")]
+    //public static void OpenWindow()
     //{
-    //    var asset = EditorUtility.InstanceIDToObject(instanceID) as ExampleGraph;
-
-    //    if (asset == null) return false;
-
-    //    var window = EditorWindow.GetWindow<ExampleGraphWindow>();
-    //    window.InitializeGraph(asset);
-    //    return true;
+    //    BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
+    //    wnd.titleContent = new GUIContent("BehaviorTreeEditor");
+    //    Undo.undoRedoPerformed += () =>
+    //    {
+            
+    //    };
     //}
+
+    [OnOpenAsset(0)]
+    public static bool OnBaseGraphOpened(int instanceID, int line)
+    {
+        var asset = EditorUtility.InstanceIDToObject(instanceID) as BehaviourTree;
+
+        if (asset == null) return false;
+
+        var window = GetWindow<BehaviorTreeEditor>();
+        window.titleContent = new GUIContent("BehaviorTreeEditor");
+        BehaviourTree tree = Selection.activeObject as BehaviourTree;
+        window.RefarenceSetView(tree);
+        return true;
+    }
 
     public void CreateGUI()
     {
@@ -53,7 +55,7 @@ public class BehaviorTreeEditor : EditorWindow
         _treeView.OnNodeSelected = OnNodeSelectionChanged;
         _inspectorView = root.Q<InspectorView>();
 
-        OnSelectionChange();
+        //OnSelectionChange();
     }
 
     private void OnNodeSelectionChanged(NodeView nodeView) 
@@ -61,13 +63,18 @@ public class BehaviorTreeEditor : EditorWindow
         _inspectorView.UpdateSelection(nodeView);
     }
 
-    private void OnSelectionChange()
-    {
-        BehaviourTree tree = Selection.activeObject as BehaviourTree;
+    //private void OnSelectionChange()
+    //{
+    //    BehaviourTree tree = Selection.activeObject as BehaviourTree;
 
-        if (tree && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
-        {
-            _treeView.PopulateView(tree);
-        }
+    //    if (tree && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
+    //    {
+    //        _treeView.PopulateView(tree);
+    //    }
+    //}
+
+    public void RefarenceSetView(BehaviourTree tree)
+    {
+        _treeView.PopulateView(tree);
     }
 }
