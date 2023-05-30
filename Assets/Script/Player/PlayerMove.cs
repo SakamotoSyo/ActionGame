@@ -20,12 +20,12 @@ public class PlayerMove
     
     public void Update()
     {
-        Move();
+        
     }
 
     public void FixedUpdate() 
     {
-
+        Move();
     }
 
     private void Move() 

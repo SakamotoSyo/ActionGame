@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private PlayerInput _playerInput = new();
     [SerializeField] private PlayerMove _playerMove = new();
+    //[SerializeField] private
 
     // Start is called before the first frame update
     void Start()
@@ -13,8 +15,19 @@ public class PlayerController : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        _playerMove.Update();
+       
     }
+
+    private void FixedUpdate()
+    {
+        
+    }
+
+    private void Move()
+    {
+        _playerMove.FixedUpdate();
+    }
+
 }

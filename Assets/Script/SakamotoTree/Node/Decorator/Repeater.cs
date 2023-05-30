@@ -15,7 +15,7 @@ public class Repeater : DecoratorNode
 
     protected override void OnStart(Environment env)
     {
-       
+       _countTime = 0;
     }
 
     protected override State OnUpdate(Environment env)
@@ -29,7 +29,6 @@ public class Repeater : DecoratorNode
         else 
         {
             Debug.Log("Ž¸”s‚µ‚Ä‚Ü‚·");
-            Child.CurrentState?.Invoke(State.Failure);
             return State.Failure;
         }
 

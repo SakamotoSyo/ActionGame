@@ -27,10 +27,9 @@ public class BehaviourTreeView : GraphView
         styleSheets.Add(styleSheet);
     }
 
-    public void SetEditorWindow(EditorWindow editorWindow) 
+    public void SetEditorWindow(EditorWindow editorWindow)
     {
         var menuWindowProvider = ScriptableObject.CreateInstance<SearchMenuWindowProvider>();
-        Debug.Log(editorWindow);
         menuWindowProvider.Init(this, editorWindow);
         nodeCreationRequest += context =>
         {
@@ -39,7 +38,7 @@ public class BehaviourTreeView : GraphView
         };
     }
 
-    private NodeView FindNodeView(Node node) 
+    private NodeView FindNodeView(Node node)
     {
         return GetNodeByGuid(node.Guid) as NodeView;
     }
@@ -54,7 +53,7 @@ public class BehaviourTreeView : GraphView
         graphViewChanged -= OnGraphViewChanged;
         DeleteElements(graphElements);
         graphViewChanged += OnGraphViewChanged;
-        if (tree.RootNode == null) 
+        if (tree.RootNode == null)
         {
             tree.RootNode = tree.CreateNode(typeof(RootNode)) as RootNode;
             EditorUtility.SetDirty(tree);
@@ -98,7 +97,7 @@ public class BehaviourTreeView : GraphView
                 }
 
                 Edge edge = elem as Edge;
-                if (edge != null) 
+                if (edge != null)
                 {
                     NodeView parentView = edge.output.node as NodeView;
                     NodeView childView = edge.input.node as NodeView;
@@ -131,7 +130,12 @@ public class BehaviourTreeView : GraphView
         base.BuildContextualMenu(evt);
     }
 
-    public void CreateNode(Type type, Rect grid) 
+    public void Test()
+    {
+
+    }
+
+    public void CreateNode(Type type, Rect grid)
     {
         Node node = _tree.CreateNode(type);
         CreateNodeView(node, grid);
@@ -143,7 +147,7 @@ public class BehaviourTreeView : GraphView
         AddElement(nodeView);
     }
 
-    private void CreateNodeView(Node node, Rect rect) 
+    private void CreateNodeView(Node node, Rect rect)
     {
         NodeView nodeView = new NodeView(node);
         nodeView.SetPosition(rect);

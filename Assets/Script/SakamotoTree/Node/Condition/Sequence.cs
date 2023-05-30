@@ -8,25 +8,34 @@ public class Sequence : ConditionNode
     [NonSerialized] private int _count = 0;
     protected override void OnExit(Environment env)
     {
-        throw new System.NotImplementedException();
+
     }
 
     protected override void OnStart(Environment env)
     {
-        throw new System.NotImplementedException();
+
     }
 
     protected override State OnUpdate(Environment env)
     {
-        State childState = NodeChildren[_count % NodeChildren.Count].update(env);
-        if (childState == State.Success)
+        _count = 0;
+        
+        while (NodeChildren.Count > _count)
         {
-            _count++;
-            return State.Success;
-        }
-        else if (childState == State.Failure) 
-        {
-            return State.Failure;
+            State childState = NodeChildren[_count].update(env);
+            if (childState == State.Success)
+            {
+                //Debug.Log(_count);
+                //ÅŒã‚Ü‚Å¬Œ÷‚µ‚½ê‡¬Œ÷‚ğ•Ô‚·
+                if (_count == NodeChildren.Count - 1)
+                {
+                    Debug.Log("‚·‚×‚Ä¬Œ÷");
+                    return State.Success;
+                }
+                _count++;
+                continue;
+            }
+            return childState;
         }
         return State.Running;
     }

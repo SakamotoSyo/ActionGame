@@ -84,9 +84,9 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
         Node.Position.y = newPos.yMin;
     }
 
-    public void StateSetColor(Node.State state) 
+    public void StateSetColor(bool isStart) 
     {
-        if (state == Node.State.Running)
+        if (isStart)
         {
             this.inputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);
             this.outputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);

@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
+using UnityEditor.Callbacks;
 using UnityEditor.UIElements;
 using System;
 
@@ -15,7 +16,23 @@ public class BehaviorTreeEditor : EditorWindow
     {
         BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
         wnd.titleContent = new GUIContent("BehaviorTreeEditor");
+        Undo.undoRedoPerformed += () =>
+        {
+            
+        };
     }
+
+    //[OnOpenAsset(0)]
+    //public static bool OnBaseGraphOpened(int instanceID, int line)
+    //{
+    //    var asset = EditorUtility.InstanceIDToObject(instanceID) as ExampleGraph;
+
+    //    if (asset == null) return false;
+
+    //    var window = EditorWindow.GetWindow<ExampleGraphWindow>();
+    //    window.InitializeGraph(asset);
+    //    return true;
+    //}
 
     public void CreateGUI()
     {
@@ -47,7 +64,6 @@ public class BehaviorTreeEditor : EditorWindow
     private void OnSelectionChange()
     {
         BehaviourTree tree = Selection.activeObject as BehaviourTree;
-        Debug.Log("ƒ`ƒFƒ“‹V");
 
         if (tree && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
         {

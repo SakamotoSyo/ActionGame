@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IfCondition : ConditionNode
+public class IfCondition : DecoratorNode
 {
     public int dadadada = 0;
     protected override void OnExit(Environment env)
@@ -20,3 +20,4 @@ public class IfCondition : ConditionNode
         throw new System.NotImplementedException();
     }
 }
+

@@ -17,6 +17,7 @@ public class DebugNode : ActionNode
 
     protected override State OnUpdate(Environment env)
     {
-        return State.Running;
+        Debug.Log("’…‚Ü‚µ‚½");
+        return State.Success;
     }
 }

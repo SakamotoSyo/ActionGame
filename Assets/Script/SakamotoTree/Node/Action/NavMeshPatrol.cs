@@ -9,32 +9,44 @@ public class NavMeshPatrol : ActionNode
 {
     [Header("徘徊する範囲")]
     [SerializeField] private float _patrolRange = 0;
+    [Header("目的地に着いたときに止まる時間")]
+    [SerializeField] private float _goalStopTime = 0;
+    [SerializeField] private float _speed;
     [NonSerialized] private Vector3 _startPosition;
     [NonSerialized] private Vector3 _goalPosition;
-    [NonSerialized] private NavMeshAgent _agent;
+    [NonSerialized] private float _countTime;
 
     protected override void OnExit(Environment env)
     {
-
+        env.MySelfAnim.SetBool("Move", false);
     }
 
     protected override void OnStart(Environment env)
     {
         _startPosition = env.mySelf.transform.position;
-        _agent = env.mySelf.GetComponent<NavMeshAgent>();
+        env.MySelfAnim.SetBool("Move", true);
+        env.navMesh.speed = _speed;
         SelectPosition();
     }
 
     protected override State OnUpdate(Environment env)
     {
-        if (env.mySelf.transform.position.x == _goalPosition.x && env.mySelf.transform.position.z == _goalPosition.z) 
+        if (env.mySelf.transform.position.x == _goalPosition.x && env.mySelf.transform.position.z == _goalPosition.z
+            && _countTime < _goalStopTime) 
         {
+            //目的地に着いたら指定した秒数止まる
+            _countTime += Time.deltaTime;
+            env.MySelfAnim.SetBool("Move", false);
+        }
+        else if (env.mySelf.transform.position.x == _goalPosition.x && env.mySelf.transform.position.z == _goalPosition.z) 
+        {
+            //目的地変更
+            env.MySelfAnim.SetBool("Move", true);
             SelectPosition();
-            Debug.Log("リセット");
+            _countTime = 0;
         }
        
-        Debug.Log("動いてます");
-        _agent.SetDestination(_goalPosition);
+        env.navMesh.SetDestination(_goalPosition);
         return State.Running;
     }
 

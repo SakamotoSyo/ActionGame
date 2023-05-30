@@ -1,5 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/Script/SakamotoTree/Editor/BehaviorTreeEditor.uss?fileID=7433441132597879392&amp;guid=a3c2d2312226c3041b4bbdd57f359259&amp;type=3#BehaviorTreeEditor" />
+    <Style src="project://database/Assets/InGame/Script/SakamotoTree/Editor/BehaviorTreeEditor.uss?fileID=7433441132597879392&amp;guid=a3c2d2312226c3041b4bbdd57f359259&amp;type=3#BehaviorTreeEditor" />
     <uie:Toolbar>
         <uie:ToolbarMenu display-tooltip-when-elided="true" text="Assets" />
     </uie:Toolbar>

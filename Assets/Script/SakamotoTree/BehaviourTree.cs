@@ -4,12 +4,14 @@ using UnityEngine;
 using System;
 using UnityEditor;
 
+
 [CreateAssetMenu()]
 public class BehaviourTree : ScriptableObject
 {
     public Node RootNode;
     private Node.State _treeState = Node.State.Running;
-    public List<Node> Nodes = new List<Node>();
+    [SerializeField] public List<Node> Nodes = new List<Node>();
+    private Stack<Node> _nodeStack = new Stack<Node>();
 
     public Node.State update(Environment env) 
     {
@@ -32,6 +34,7 @@ public class BehaviourTree : ScriptableObject
     public void DeleteNode(Node node) 
     {
         Nodes.Remove(node);
+        _nodeStack.Push(node);
         AssetDatabase.RemoveObjectFromAsset(node);
         AssetDatabase.SaveAssets();
     }
