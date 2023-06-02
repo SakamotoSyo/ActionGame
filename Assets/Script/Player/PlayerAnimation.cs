@@ -16,8 +16,16 @@ public class PlayerAnimation
         
     }
 
-    public void MoveAnimation() 
+    public void MoveAnimation(InputSendData input) 
     {
-        _animator.SetBool("Move", true);
+        if (input.MoveInput.x != 0 || input.MoveInput.z != 0)
+        {
+            _animator.SetBool("Move", true);
+        }
+        else 
+        {
+            _animator.SetBool("Move", false);
+        }
+        
     }
 }

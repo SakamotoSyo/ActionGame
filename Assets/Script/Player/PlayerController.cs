@@ -1,17 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
+using MessagePipe;
+using VContainer;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private PlayerInput _playerInput = new();
+    [Inject] private ISubscriber<InputSendData> _inputSendSubscriber;
     [SerializeField] private PlayerMove _playerMove = new();
-    //[SerializeField] private
+    [SerializeField] private PlayerAnimation _playerAnimation = new();
+    private InputSendData _inputSendData;
 
-    // Start is called before the first frame update
     void Start()
     {
-        
+        _inputSendSubscriber.Subscribe(OnInputEventReceived).AddTo(this.GetCancellationTokenOnDestroy());
     }
 
     // Update is called once per frame
@@ -22,12 +25,21 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
+        MoveControl();
     }
 
-    private void Move()
+    /// <summary>
+    /// à⁄ìÆÇÃèàóùÇÃó¨ÇÍÇêßå‰Ç∑ÇÈä÷êî
+    /// </summary>
+    private void MoveControl()
     {
-        _playerMove.FixedUpdate();
+        _playerMove.Move(_inputSendData);
+        _playerAnimation.MoveAnimation(_inputSendData);
+    }
+
+    private void OnInputEventReceived(InputSendData sendData) 
+    {
+        _inputSendData = sendData;
     }
 
 }

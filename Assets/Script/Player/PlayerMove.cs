@@ -13,26 +13,13 @@ public class PlayerMove
     [SerializeField]Transform _transform;
     Vector3 _dir = new Vector3(0, 0, 0);
 
-    public void Init()
+    /// <summary>
+    /// Player‚ğˆÚ“®‚³‚¹‚éŠÖ”
+    /// </summary>
+    /// <param name="sendData">User‚É“ü—Í‚³‚ê‚Ä‚¢‚éInput‚ÌData</param>
+    public void Move(InputSendData sendData) 
     {
-        
-    }
-    
-    public void Update()
-    {
-        
-    }
-
-    public void FixedUpdate() 
-    {
-        Move();
-    }
-
-    private void Move() 
-    {
-        var x = Input.GetAxisRaw("Horizontal");
-        var y = Input.GetAxisRaw("Vertical");
-        _dir = new Vector3(x, 0, y);
+        _dir = new Vector3(sendData.MoveInput.x, 0, sendData.MoveInput.z);
         _dir = _mainCamera.transform.TransformDirection(_dir);
 
         _dir.y = 0;
