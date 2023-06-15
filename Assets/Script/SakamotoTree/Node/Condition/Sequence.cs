@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+[Serializable]
 public class Sequence : ConditionNode
 {
     [NonSerialized] private int _count = 0;
@@ -29,7 +30,6 @@ public class Sequence : ConditionNode
                 //ÅŒã‚Ü‚Å¬Œ÷‚µ‚½ê‡¬Œ÷‚ğ•Ô‚·
                 if (_count == NodeChildren.Count - 1)
                 {
-                    Debug.Log("‚·‚×‚Ä¬Œ÷");
                     return State.Success;
                 }
                 _count++;

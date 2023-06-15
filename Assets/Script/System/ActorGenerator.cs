@@ -8,7 +8,9 @@ public class ActorGenerator : MonoBehaviour
 
     public PlayerController PlayerCon { get; private set; }
     [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private Transform _playerInsTransform;
     [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private Transform _enemyInsPos;
     private static GameObject _playerObj;
 
     private void Awake()
@@ -30,16 +32,16 @@ public class ActorGenerator : MonoBehaviour
 
     public PlayerController PlayerGeneration()
     {
-        _playerObj = Instantiate(_playerPrefab, transform.position, transform.rotation).transform.GetChild(0).gameObject;
+        _playerObj = Instantiate(_playerPrefab, _playerInsTransform.position, transform.rotation).transform.GetChild(0).gameObject;
         PlayerCon = _playerObj.GetComponent<PlayerController>();
         return PlayerCon;
     }
 
     public void EnemyGeneration()
     {
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 2; i++)
         {
-            var enemyObj = Instantiate(_enemyPrefab, transform.position, transform.rotation);
+            var enemyObj = Instantiate(_enemyPrefab, _enemyInsPos.position, transform.rotation);
             enemyObj.name = _enemyPrefab.name + i;
         }
 

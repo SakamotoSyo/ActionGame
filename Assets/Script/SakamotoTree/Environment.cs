@@ -5,9 +5,11 @@ using UnityEngine.AI;
 
 public class Environment
 {
-    public GameObject mySelf;
+    public GameObject MySelf;
+    public Rigidbody MySelfRb;
     public Animator MySelfAnim;
     public Animator ConditionAnim;
-    public NavMeshAgent navMesh;
-    public GameObject target;
+    public NavMeshAgent NavMesh;
+    public GameObject Target;
+    public ActorStatus ActorStatus;
 }

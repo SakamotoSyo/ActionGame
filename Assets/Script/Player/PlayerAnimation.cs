@@ -1,24 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 [System.Serializable]
 public class PlayerAnimation
 {
     [SerializeField] private Animator _animator;
-    void Start()
+
+    public void Start() 
     {
-        
+       
     }
 
-    void Update()
+    public void Update() 
     {
-        
+
     }
 
-    public void MoveAnimation(InputSendData input) 
+    public void MoveAnimation() 
     {
-        if (input.MoveInput.x != 0 || input.MoveInput.z != 0)
+        if (InputManager.Instance.MoveDir.x != 0 || InputManager.Instance.MoveDir.z != 0)
         {
             _animator.SetBool("Move", true);
         }
@@ -26,6 +28,16 @@ public class PlayerAnimation
         {
             _animator.SetBool("Move", false);
         }
-        
     }
+
+    public void AttackAnim() 
+    {
+        _animator.SetTrigger("Attack");
+    }
+
+    public async UniTask AddDamageAnim() 
+    {
+        _animator.Play("Damage");
+        await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+    } 
 }

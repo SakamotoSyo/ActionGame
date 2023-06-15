@@ -23,22 +23,22 @@ public class NavMeshPatrol : ActionNode
 
     protected override void OnStart(Environment env)
     {
-        _startPosition = env.mySelf.transform.position;
+        _startPosition = env.MySelf.transform.position;
         env.MySelfAnim.SetBool("Move", true);
-        env.navMesh.speed = _speed;
+        env.NavMesh.speed = _speed;
         SelectPosition();
     }
 
     protected override State OnUpdate(Environment env)
     {
-        if (env.mySelf.transform.position.x == _goalPosition.x && env.mySelf.transform.position.z == _goalPosition.z
+        if (env.MySelf.transform.position.x == _goalPosition.x && env.MySelf.transform.position.z == _goalPosition.z
             && _countTime < _goalStopTime) 
         {
             //目的地に着いたら指定した秒数止まる
             _countTime += Time.deltaTime;
             env.MySelfAnim.SetBool("Move", false);
         }
-        else if (env.mySelf.transform.position.x == _goalPosition.x && env.mySelf.transform.position.z == _goalPosition.z) 
+        else if (env.MySelf.transform.position.x == _goalPosition.x && env.MySelf.transform.position.z == _goalPosition.z) 
         {
             //目的地変更
             env.MySelfAnim.SetBool("Move", true);
@@ -46,7 +46,7 @@ public class NavMeshPatrol : ActionNode
             _countTime = 0;
         }
        
-        env.navMesh.SetDestination(_goalPosition);
+        env.NavMesh.SetDestination(_goalPosition);
         return State.Running;
     }
 

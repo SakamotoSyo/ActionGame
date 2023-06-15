@@ -5,7 +5,7 @@ using System;
 using UnityEditor;
 
 
-[CreateAssetMenu()]
+[Serializable][CreateAssetMenu()]
 public class BehaviourTree : ScriptableObject
 {
     public Node RootNode;

@@ -1,26 +1,38 @@
 using System.Collections;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using System;
 using UnityEngine;
-using MessagePipe;
-using VContainer;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageble
 {
-    [Inject] private ISubscriber<InputSendData> _inputSendSubscriber;
+    public PlayerState PlayerState => _playerState;
     [SerializeField] private PlayerMove _playerMove = new();
     [SerializeField] private PlayerAnimation _playerAnimation = new();
-    private InputSendData _inputSendData;
+    [Tooltip("デフォルトの無敵時間")]
+    [SerializeField] private float _invincibleTime = 0.5f;
+    [SerializeField] private PlayerAttack _playerAttack = new();
+    [SerializeField] private GameObject _menuObj;
+    private PlayerStatus _playerStatus;
+    private PlayerState _playerState;
+
+    private void Awake()
+    {
+       
+    }
 
     void Start()
     {
-        _inputSendSubscriber.Subscribe(OnInputEventReceived).AddTo(this.GetCancellationTokenOnDestroy());
+        InputManager.Instance.SetEnterInput(InputManager.InputType.Attack, Attack);
+        InputManager.Instance.SetEnterInput(InputManager.InputType.Menu, MenuOpen);
+        _playerAnimation.Start();
     }
 
-    // Update is called once per frame
     private void Update()
     {
-       
+        _playerAnimation.Update();
+        _playerAttack.Update();
+       _playerAnimation.MoveAnimation();
     }
 
     private void FixedUpdate()
@@ -33,13 +45,99 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void MoveControl()
     {
-        _playerMove.Move(_inputSendData);
-        _playerAnimation.MoveAnimation(_inputSendData);
+        if (!_playerState.HasFlag(PlayerState.Damage) && !_playerState.HasFlag(PlayerState.Attack)) 
+        {
+            _playerMove.Move();
+        }
     }
 
-    private void OnInputEventReceived(InputSendData sendData) 
+    /// <summary>
+    /// ダメージの処理の流れを制御する
+    /// </summary>
+    /// <param name="damage"></param>
+    public async void ReceiveDamage(float damage, Vector3 enemyPos)
     {
-        _inputSendData = sendData;
+        if (!_playerState.HasFlag(PlayerState.Damage))
+        {
+            if (_playerStatus.DownJudge(damage))
+            {
+                _playerStatus.ReceiveDamage(damage);
+
+                AddState(PlayerState.Damage);
+                _playerMove.Knockback(enemyPos);
+                await _playerAnimation.AddDamageAnim();
+                RemoveState(PlayerState.Damage);
+
+                Invincible(_invincibleTime);
+            }
+            else 
+            {
+                //死んだときの処理
+            }
+            
+        }
     }
 
+    public void Recovery(int recovery) 
+    {
+      _playerStatus.RecoveryHp(recovery);
+    }
+
+    /// <summary>
+    /// 引数で指定された時間無敵になる
+    /// </summary>
+    /// <param name="invincibleTime"></param>
+    public async void Invincible(float invincibleTime) 
+    {
+        AddState(PlayerState.Invincible);
+        await UniTask.Delay(TimeSpan.FromSeconds(invincibleTime));
+        RemoveState(PlayerState.Invincible);
+    }
+
+    private async void Attack() 
+    {
+        AddState(PlayerState.Attack);
+        _playerAnimation.AttackAnim();
+        await _playerAttack.Attack();
+        RemoveState(PlayerState.Attack);
+    }
+
+    private void MenuOpen() 
+    {
+        if (_playerState.HasFlag(PlayerState.MenuOpen)) 
+        {
+            RemoveState(PlayerState.MenuOpen);
+            _menuObj.SetActive(false);
+        }
+        else 
+        {
+            AddState(PlayerState.MenuOpen);
+            _menuObj.SetActive(true);
+        }
+    }
+
+    public void SetPlayerStatus(PlayerStatus playerStatus) 
+    {
+        _playerStatus = playerStatus;
+    }
+
+    public void AddState(PlayerState state)
+    {
+        _playerState |= state;
+    }
+    public void RemoveState(PlayerState state)
+    {
+        _playerState &= ~state;
+    }
+}
+
+[Serializable]
+[Flags]
+public enum PlayerState
+{
+    Run = 1,
+    Attack = 2,
+    Damage = 4,
+    Invincible = 8,
+    MenuOpen = 16,
 }

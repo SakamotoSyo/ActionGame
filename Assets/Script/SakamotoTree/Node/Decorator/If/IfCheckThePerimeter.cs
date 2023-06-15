@@ -5,9 +5,9 @@ public class IfCheckThePerimeter : DecoratorNode
 {
     [Header("標的を感知する距離")]
     [SerializeField] private float _sensingDistance;
-    [Header("近づいたときのステート")]
+    [Header("近づいたときに次のステートに進むか")]
     [SerializeField] private State _approachingState;
-    [Header("離れたときのステート")]
+    [Header("離れたときに次のステートに進むか")]
     [SerializeField] private State _distanceState;
     protected override void OnExit(Environment env)
     {
@@ -21,7 +21,7 @@ public class IfCheckThePerimeter : DecoratorNode
 
     protected override State OnUpdate(Environment env)
     {
-        var dist = (env.mySelf.transform.position - env.target.transform.position).sqrMagnitude;
+        var dist = (env.MySelf.transform.position - env.Target.transform.position).sqrMagnitude;
         if (dist < _sensingDistance)
         {
             return _approachingState;

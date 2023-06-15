@@ -12,25 +12,25 @@ public class MoveNode : ActionNode
     protected override void OnExit(Environment env)
     {
         env.MySelfAnim.SetBool("Move", false);
-        _agent.SetDestination(env.mySelf.transform.position);
+        _agent.SetDestination(env.MySelf.transform.position);
     }
 
     protected override void OnStart(Environment env)
     {
-        _agent = env.mySelf.GetComponent<NavMeshAgent>();
+        _agent = env.MySelf.GetComponent<NavMeshAgent>();
         _agent.speed = _moveSpeed;
     }
 
     protected override State OnUpdate(Environment env)
     {
-        var dist = (env.mySelf.transform.position - env.target.transform.position).sqrMagnitude;
+        var dist = (env.MySelf.transform.position - env.Target.transform.position).sqrMagnitude;
         if (dist < _rangeNum)
         {
             return State.Success;
         }
         env.ConditionAnim.SetTrigger("Detection");
         env.MySelfAnim.SetBool("Move", true);
-        _agent.SetDestination(env.target.transform.position);
+        _agent.SetDestination(env.Target.transform.position);
         return State.Running;
     }
 }

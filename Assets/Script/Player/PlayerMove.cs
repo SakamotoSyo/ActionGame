@@ -7,6 +7,7 @@ public class PlayerMove
 {
     [SerializeField] private GameObject _mainCamera;
     [SerializeField] private float _moveSpeed;
+    [SerializeField] private float _knockBackPower;
     [SerializeField] private GameObject _lookAtObj;
     [SerializeField] private Rigidbody _rb;
 
@@ -17,9 +18,9 @@ public class PlayerMove
     /// PlayerÇà⁄ìÆÇ≥ÇπÇÈä÷êî
     /// </summary>
     /// <param name="sendData">UserÇ…ì¸óÕÇ≥ÇÍÇƒÇ¢ÇÈInputÇÃData</param>
-    public void Move(InputSendData sendData) 
+    public void Move() 
     {
-        _dir = new Vector3(sendData.MoveInput.x, 0, sendData.MoveInput.z);
+        _dir = new Vector3(InputManager.Instance.MoveDir.x, 0, InputManager.Instance.MoveDir.z);
         _dir = _mainCamera.transform.TransformDirection(_dir);
 
         _dir.y = 0;
@@ -31,5 +32,11 @@ public class PlayerMove
         _rb.velocity = _dir.normalized * _moveSpeed + new Vector3(0, _rb.velocity.y, 0f);
 
         _transform.LookAt(new Vector3(_lookAtObj.transform.position.x, _transform.position.y, _lookAtObj.transform.position.z));
+    }
+
+    public void Knockback(Vector3 enemyPos) 
+    {
+        Vector3 distination = (_transform.position - enemyPos).normalized;
+        _rb.AddForce(distination * _knockBackPower, ForceMode.Impulse);
     }
 }

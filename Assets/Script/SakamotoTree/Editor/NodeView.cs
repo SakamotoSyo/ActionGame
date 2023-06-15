@@ -22,7 +22,7 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
 
         CreateInputPorts();
         CreateOutputPorts();
-        Node.CurrentState += StateSetColor;
+        Node.CurrentStateView += StateSetColor;
     }
 
     /// <summary>

@@ -3,14 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Cysharp.Threading.Tasks;
+using System.Threading;
+using Unity.VisualScripting;
 
+[Serializable]
 public class AttackNode : ActionNode
 {
     [Header("攻撃のAnimParam")]
     [SerializeField] private string _attackParam;
-    [NonSerialized] private string _previousAnimation;
+    [Header("1をアニメーションの終了として何割まで再生するか")]
+    [SerializeField] private float _attackEndNum;
+    [Header("アニメーションのどのタイミングから攻撃判定を出すか")]
+    [SerializeField] private float _collisionDetectionStart, _collisionDetectionEnd;
+    [Header("当たり判定の大きさ")]
+    [SerializeField] private float _radius;
+    [Header("当たり判定の長さ")]
+    [SerializeField] private float _maxDistance;
+    [Header("当たり判定の位置調整")]
+    [SerializeField] private Vector3 _offset;
+    [Header("相手に与えるダメージ")]
+    [SerializeField] private float _damage;
     [NonSerialized] private bool _isAnimation;
     [NonSerialized] private bool _isComplete;
+    [NonSerialized] private RaycastHit _hit;
     protected override void OnExit(Environment env)
     {
         
@@ -34,12 +49,13 @@ public class AttackNode : ActionNode
             _isAnimation = false;
             return State.Success;
         }
-        else if (!_isAnimation) 
+        else if (!_isAnimation)
         {
             _isAnimation = true;
-            Attack(env);
+            AttackAnim(env, _token.Token);
         }
 
+        AttackEffect(env);
         return State.Running;
     }
 
@@ -47,14 +63,35 @@ public class AttackNode : ActionNode
     /// 
     /// </summary>
     /// <param name="env"></param>
-    private async void Attack(Environment env)
+    private async void AttackAnim(Environment env, CancellationToken token)
     {
         env.MySelfAnim.SetTrigger(_attackParam);
-        await UniTask.Delay(1000);
-        await UniTask.WaitUntil(() => env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.75f);
-        //Debug.Log("2");
-        env.MySelfAnim.SetTrigger(_attackParam);
-        await UniTask.WaitUntil(() => env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f);
+        await UniTask.WaitUntil(() => !env.MySelfAnim.IsInTransition(0), cancellationToken: token);
+        await UniTask.WaitUntil(() => env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= _attackEndNum, cancellationToken: token);
         _isComplete = true;
+    }
+
+    /// <summary>
+    /// 攻撃が相手に当たったか判定し処理を行うメソッド
+    /// </summary>
+    /// <param name="env"></param>
+    private void AttackEffect(Environment env) 
+    {
+        if (env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= _collisionDetectionStart &&
+           env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime <= _collisionDetectionEnd)
+        {
+            BehaviorHelper.OnDrawSphere(env.MySelf.transform, _radius, Vector3.up, _maxDistance);
+            var isHit = Physics.SphereCast(env.MySelf.transform.position + _offset, _radius,
+                env.MySelf.transform.forward, out _hit, _maxDistance);
+
+            if (isHit)
+            {
+                if (_hit.collider.gameObject.TryGetComponent(out IDamageble damageCs))
+                {
+                    Debug.Log("10のダメージを与えた");
+                    damageCs.ReceiveDamage(_damage, env.MySelf.transform.position);
+                }
+            }
+        }
     }
 }
