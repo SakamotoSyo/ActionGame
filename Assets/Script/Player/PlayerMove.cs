@@ -34,9 +34,17 @@ public class PlayerMove
         _transform.LookAt(new Vector3(_lookAtObj.transform.position.x, _transform.position.y, _lookAtObj.transform.position.z));
     }
 
-    public void Knockback(Vector3 enemyPos) 
+    public void Knockback(Vector3 enemyPos, PlayerState playerState) 
     {
-        Vector3 distination = (_transform.position - enemyPos).normalized;
-        _rb.AddForce(distination * _knockBackPower, ForceMode.Impulse);
+        if (playerState.HasFlag(PlayerState.Shield))
+        {
+            Vector3 distination = (_transform.position - enemyPos).normalized;
+            _rb.AddForce(distination * _knockBackPower / 2, ForceMode.Impulse);
+        }
+        else 
+        {
+            Vector3 distination = (_transform.position - enemyPos).normalized;
+            _rb.AddForce(distination * _knockBackPower, ForceMode.Impulse);
+        }   
     }
 }

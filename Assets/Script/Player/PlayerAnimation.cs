@@ -7,6 +7,8 @@ using Cysharp.Threading.Tasks;
 public class PlayerAnimation
 {
     [SerializeField] private Animator _animator;
+    [SerializeField] private Transform _shieldEffectPos;
+    [SerializeField] private GameObject _shieldEffectObj;
 
     public void Start() 
     {
@@ -39,5 +41,21 @@ public class PlayerAnimation
     {
         _animator.Play("Damage");
         await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
-    } 
+    }
+
+    public async UniTask ShieldDamageAnim() 
+    {
+        _animator.SetTrigger("ShieldDamage");
+        await UniTask.WaitUntil(() => _animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.95f);
+    }
+
+    public void ShieldEffect() 
+    {
+        Object.Instantiate(_shieldEffectObj, _shieldEffectPos.position, _shieldEffectPos.rotation);
+    }
+
+    public void ShieldAnim(bool playBool) 
+    {
+        _animator.SetBool("Shield", playBool);
+    }
 }

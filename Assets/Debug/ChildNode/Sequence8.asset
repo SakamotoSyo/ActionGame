@@ -12,11 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fefc5dd74a839c84da6f09f050efb8f6, type: 3}
   m_Name: Sequence8
   m_EditorClassIdentifier: 
-  Guid: 8073e74f91f09034aab620ef29f3aa57
-  Position: {x: 393.60007, y: 160.00003}
+  Guid: f096eed217b556e47873b3372750cc5e
+  Position: {x: 374.19998, y: 363.20004}
   NodeChildren:
-  - {fileID: 11400000, guid: 07c57e588704ece4a9a2cbee0cc3c93f, type: 2}
-  - {fileID: 11400000, guid: 8b7a1d25635dabe43ab4933dae8ad110, type: 2}
-  - {fileID: 11400000, guid: b3a078143f34f87488e195c6ad264a16, type: 2}
-  - {fileID: 11400000, guid: f54426851fc27384f8724a1103c9f99d, type: 2}
-  - {fileID: 11400000, guid: 5b7f8f75f2c592b4e9799646e72d5a1c, type: 2}
+  - {fileID: 11400000, guid: fbd30abc3ee2e2f429414e2656673814, type: 2}
+  - {fileID: 11400000, guid: e1bfa1984ed3e5a4ba865ca37a0fba52, type: 2}

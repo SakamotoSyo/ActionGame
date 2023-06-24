@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aee5788c06a61954bb7375c1d3109fdf, type: 3}
   m_Name: IfCheckThePerimeter6
   m_EditorClassIdentifier: 
-  Guid: de239bba636f8964b882ba0d1f168e21
-  Position: {x: 608, y: 236.79999}
+  Guid: 951ea838cbda0d84b8835b48f27987a4
+  Position: {x: 692, y: 439.99997}
   Child: {fileID: 0}
   _sensingDistance: 200
-  _approachingState: 2
-  _distanceState: 1
+  _approachingState: 1
+  _distanceState: 2

@@ -23,9 +23,15 @@ public class PlayerController : MonoBehaviour, IDamageble
 
     void Start()
     {
+        _playerAnimation.Start();
+    }
+
+    private void OnEnable()
+    {
         InputManager.Instance.SetEnterInput(InputManager.InputType.Attack, Attack);
         InputManager.Instance.SetEnterInput(InputManager.InputType.Menu, MenuOpen);
-        _playerAnimation.Start();
+        InputManager.Instance.SetEnterInput(InputManager.InputType.Shield, ShieldBeginningControl);
+        InputManager.Instance.SetExitInput(InputManager.InputType.Shield, ShieldEndControl);
     }
 
     private void Update()
@@ -57,14 +63,26 @@ public class PlayerController : MonoBehaviour, IDamageble
     /// <param name="damage"></param>
     public async void ReceiveDamage(float damage, Vector3 enemyPos)
     {
-        if (!_playerState.HasFlag(PlayerState.Damage))
+        //ガードしていたら
+        if (_playerState.HasFlag(PlayerState.Shield)) 
         {
+            AddState(PlayerState.Damage);
+            _playerMove.Knockback(enemyPos, _playerState);
+            _playerAnimation.ShieldEffect();
+            await _playerAnimation.ShieldDamageAnim();
+            RemoveState(PlayerState.Damage);
+
+            Invincible(_invincibleTime);
+        }
+        else if (!_playerState.HasFlag(PlayerState.Damage) && !_playerState.HasFlag(PlayerState.Invincible))
+        {
+        　　//ダメージを受ける
             if (_playerStatus.DownJudge(damage))
             {
                 _playerStatus.ReceiveDamage(damage);
 
                 AddState(PlayerState.Damage);
-                _playerMove.Knockback(enemyPos);
+                _playerMove.Knockback(enemyPos, _playerState);
                 await _playerAnimation.AddDamageAnim();
                 RemoveState(PlayerState.Damage);
 
@@ -77,6 +95,22 @@ public class PlayerController : MonoBehaviour, IDamageble
             
         }
     }
+
+    /// <summary>
+    /// ガードを始める一連の流れ
+    /// </summary>
+    public void ShieldBeginningControl()
+    {
+        AddState(PlayerState.Shield);
+        _playerAnimation.ShieldAnim(true);
+    }
+
+    public void ShieldEndControl() 
+    {
+        RemoveState(PlayerState.Shield);
+        _playerAnimation.ShieldAnim(false);
+    }
+    
 
     public void Recovery(int recovery) 
     {
@@ -96,10 +130,13 @@ public class PlayerController : MonoBehaviour, IDamageble
 
     private async void Attack() 
     {
-        AddState(PlayerState.Attack);
-        _playerAnimation.AttackAnim();
-        await _playerAttack.Attack();
-        RemoveState(PlayerState.Attack);
+        if (!_playerState.HasFlag(PlayerState.Shield))
+        {
+            AddState(PlayerState.Attack);
+            _playerAnimation.AttackAnim();
+            await _playerAttack.Attack();
+            RemoveState(PlayerState.Attack);
+        }
     }
 
     private void MenuOpen() 
@@ -140,4 +177,5 @@ public enum PlayerState
     Damage = 4,
     Invincible = 8,
     MenuOpen = 16,
+    Shield = 32,
 }
