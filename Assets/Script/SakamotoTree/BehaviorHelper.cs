@@ -39,7 +39,7 @@ public class BehaviorHelper : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        if (!_isCast) return;
+        if (!_isCast || !_transform) return;
         //UŒ‚”»’è‚ğo‚·
         var isHit = Physics.SphereCast(_transform.position + _offset, _radius, _transform.forward, out _hit, _maxDistance);
 

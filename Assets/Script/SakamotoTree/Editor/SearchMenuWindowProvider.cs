@@ -46,6 +46,14 @@ public class SearchMenuWindowProvider : ScriptableObject, ISearchWindowProvider
             { level = 2, userData = DecoratorTypes[i] });
         }
 
+        entries.Add(new SearchTreeGroupEntry(new GUIContent("DescriptionNode")) { level = 1 });
+        var DescriptionTypes = TypeCache.GetTypesDerivedFrom<DescriptionNode>();
+        for(int i = 0; i < DescriptionTypes.Count; i++) 
+        {
+            entries.Add(new SearchTreeEntry(new GUIContent(DescriptionTypes[i].Name))
+            { level = 2, userData = DescriptionTypes[i] });
+        }
+            
         return entries;
     }
 

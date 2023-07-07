@@ -8,6 +8,8 @@ public class MoveNode : ActionNode
     [SerializeField] private int _moveSpeed;
     [Header("どの程度まで近づいたら動くのをやめるか")]
     [SerializeField] private float _rangeNum;
+    [Header("発見マークを出すかどうか")]
+    [SerializeField] private bool _isDetection;
     [System.NonSerialized] private NavMeshAgent _agent;
     protected override void OnExit(Environment env)
     {
@@ -28,7 +30,11 @@ public class MoveNode : ActionNode
         {
             return State.Success;
         }
-        env.ConditionAnim.SetTrigger("Detection");
+
+        if (_isDetection) 
+        {
+            env.ConditionAnim.SetTrigger("Detection");
+        }
         env.MySelfAnim.SetBool("Move", true);
         _agent.SetDestination(env.Target.transform.position);
         return State.Running;

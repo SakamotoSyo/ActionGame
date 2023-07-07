@@ -37,7 +37,8 @@ public class IfReceiveDamage : DecoratorNode
             env.MySelfAnim.Play("Damage");
             _saveDamage = env.ActorStatus.CurrentHp.Value;
             Debug.Log($"ƒ_ƒ[ƒW‚ğó‚¯‚½Œ»İ‚ÌŠÔ");
-            return State.Success;
+            return Child.update(env);
+           // return State.Success;
         }
         else 
         {

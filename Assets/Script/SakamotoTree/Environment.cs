@@ -9,6 +9,7 @@ public class Environment
     public Rigidbody MySelfRb;
     public Animator MySelfAnim;
     public Animator ConditionAnim;
+    public Transform BulletInsPos;
     public NavMeshAgent NavMesh;
     public GameObject Target;
     public ActorStatus ActorStatus;

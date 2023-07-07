@@ -17,25 +17,29 @@ public class BehaviourTree : ScriptableObject
     {
         return RootNode.update(env);
     }
-//TODO:Ç±Ç±å„Ç…èCê≥
+
 #if UNITY_EDITOR
     public Node CreateNode(Type type) 
     {
         Node node = CreateInstance(type) as Node;
         node.name = type.Name;
         node.Guid = GUID.Generate().ToString();
+        Undo.RecordObject(this, "Behaviour Tree (CreateNode)");
         Nodes.Add(node);
 
         AssetDatabase.AddObjectToAsset(node, this);
+        Undo.RegisterCreatedObjectUndo(node, "Behaviour Tree (CreateNode)");
         AssetDatabase.SaveAssets();
         return node;
     }
 
     public void DeleteNode(Node node) 
     {
+        Undo.RecordObject(this, "Behaviour Tree (DeleteNode)");
         Nodes.Remove(node);
         _nodeStack.Push(node);
-        AssetDatabase.RemoveObjectFromAsset(node);
+        //AssetDatabase.RemoveObjectFromAsset(node);
+        Undo.DestroyObjectImmediate(node);
         AssetDatabase.SaveAssets();
     }
 
@@ -49,20 +53,25 @@ public class BehaviourTree : ScriptableObject
         ConditionNode conditionNode = parent as ConditionNode;
         if (conditionNode) 
         {
+            Undo.RecordObject(conditionNode, "Behaviour Tree (AddChild)");
             conditionNode.NodeChildren.Add(child);
+            EditorUtility.SetDirty(conditionNode);
         }
 
         RootNode rootNode = parent as RootNode;
         if (rootNode) 
         {
+            Undo.RecordObject(rootNode, "Behaviour Tree (AddChild)");
             rootNode.Child = child;
+            EditorUtility.SetDirty(rootNode);
         }
 
         DecoratorNode decoratorNode = parent as DecoratorNode;
         if (decoratorNode) 
         {
-       
+            Undo.RecordObject(decoratorNode, "Behaviour Tree (AddChild)");
             decoratorNode.Child = child;
+            EditorUtility.SetDirty(decoratorNode);
         }
     }
 
@@ -71,22 +80,27 @@ public class BehaviourTree : ScriptableObject
         ConditionNode conditionNode = parent as ConditionNode;
         if (conditionNode)
         {
+            Undo.RecordObject(conditionNode, "Behaviour Tree (RemoveChild)");
             conditionNode.NodeChildren.Remove(child);
+            EditorUtility.SetDirty(conditionNode);
         }
 
 
         RootNode rootNode = parent as RootNode;
         if (rootNode)
         {
+            Undo.RecordObject(rootNode, "Behaviour Tree (RemoveChild)");
             rootNode.Child = null;
+            EditorUtility.SetDirty(rootNode);
         }
 
 
         DecoratorNode decoratorNode = parent as DecoratorNode;
         if (decoratorNode)
         {
-
+            Undo.RecordObject(decoratorNode, "Behaviour Tree (RemoveChild)");
             decoratorNode.Child = null;
+            EditorUtility.SetDirty(decoratorNode);
         }
     }
 
@@ -116,4 +130,11 @@ public class BehaviourTree : ScriptableObject
         return children;
     }
 #endif
+
+    //public BehaviourTree Clone() 
+    //{
+    //    BehaviourTree tree = Instantiate(this);
+    //    tree.RootNode = tree.RootNode.Clone();
+    //    tree
+    //}
 }

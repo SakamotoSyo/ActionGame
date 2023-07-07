@@ -22,21 +22,13 @@ public static class BehaviorLoadManager
     /// behaviorTreeをクローンする
     /// メモ：2人の敵が同じScriptableObjを参照していた場合Dataが共有してしまうのでクローン処理を行っている
     /// </summary>
-    public static BehaviourTree CloneBehaviorTree(BehaviourTree behaviour, string objName, bool debugBool = false)
+    public static BehaviourTree CloneBehaviorTree(BehaviourTree behaviour, string objName)
     {
         Init();
-        _isDebugBool = debugBool;
-        _cloneBehaviour = ScriptableObject.CreateInstance<BehaviourTree>();
+        //_cloneBehaviour = ScriptableObject.CreateInstance<BehaviourTree>();
+        _cloneBehaviour = ScriptableObject.Instantiate(behaviour);
+        _cloneBehaviour.Nodes.Clear();
         _cloneBehaviour.RootNode = CloneNode(behaviour.RootNode);
-#if UNITY_EDITOR
-        if (debugBool)
-        {
-            var path = "Assets/Debug/ParentNode";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            AssetDatabase.CreateAsset(_cloneBehaviour, Path.Combine(path, $"{objName + _cloneBehaviour.name}.asset"));
-        }
-#endif
         return _cloneBehaviour;
     }
 
@@ -52,22 +44,23 @@ public static class BehaviorLoadManager
         if (node is RootNode)
         {
             RootNode rootNode = node as RootNode;
-            var cloneRootNode = ScriptableObject.CreateInstance<RootNode>();
+            var cloneRootNode = Clone(rootNode);
             cloneRootNode.Child = CloneNode(rootNode.Child);
-            CreateNodeAsset(cloneRootNode);
             node = cloneRootNode;
+            _cloneBehaviour.Nodes.Add(cloneRootNode.Child);
         }
         else if (node is ActionNode)
         {
             ActionNode actionNode = node as ActionNode;
             var cloneActionNode = Clone(actionNode);
-            CreateNodeAsset(cloneActionNode);
+            _cloneBehaviour.Nodes.Add(cloneActionNode);
             return cloneActionNode;
         }
         else if (node is ConditionNode)
         {
             ConditionNode conditionNode = node as ConditionNode;
             ConditionNode cloneCondiitonNode = Clone(conditionNode);
+            _cloneBehaviour.Nodes.Add(cloneCondiitonNode);
             List<Node> nodeChildren = new();
             for (int i = 0; i < conditionNode.NodeChildren.Count; i++)
             {
@@ -78,20 +71,17 @@ public static class BehaviorLoadManager
             {
                 cloneCondiitonNode.NodeChildren = nodeChildren;
             }
-            CreateNodeAsset(cloneCondiitonNode);
             return cloneCondiitonNode;
         }
         else if (node is DecoratorNode)
         {
             DecoratorNode decoratorNode = node as DecoratorNode;
             DecoratorNode cloneDecoratorNode = Clone(decoratorNode);
-
+            _cloneBehaviour.Nodes.Add(cloneDecoratorNode);
             if (decoratorNode.Child)
             {
                 cloneDecoratorNode.Child = CloneNode(decoratorNode.Child);
             }
-
-            CreateNodeAsset(cloneDecoratorNode);
             return cloneDecoratorNode;
         }
 
@@ -100,24 +90,7 @@ public static class BehaviorLoadManager
 
     private static T Clone<T>(T So) where T : ScriptableObject
     {
-        string soName = So.name;
-        So = Object.Instantiate<T>(So);
-        So.name = soName;
+        So = ScriptableObject.Instantiate(So);
         return So;
-    }
-
-    private static void CreateNodeAsset<T>(T node) where T : Node
-    {
-        if (!_isDebugBool) return;
-
-        var path = "Assets/Debug/ChildNode";
-        if (!Directory.Exists(path))
-        {
-            Directory.CreateDirectory(path);
-        }
-        var filePath = $"{node.name + _cloneBehaviour.name + _nodeCount}.asset";
-        AssetDatabase.CreateAsset(node, Path.Combine(path, filePath));
-        _cloneBehaviour.Nodes.Add(node);
-        _nodeCount++;
     }
 }

@@ -25,6 +25,14 @@ public class BehaviourTreeView : GraphView
 
         var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>("Assets/Script/SakamotoTree/Editor/BehaviorTreeEditor.uss");
         styleSheets.Add(styleSheet);
+
+        Undo.undoRedoPerformed += OnUndoRedo;
+    }
+
+    private void OnUndoRedo() 
+    {
+        PopulateView(_tree);
+        AssetDatabase.SaveAssets();
     }
 
     public void SetEditorWindow(EditorWindow editorWindow)
@@ -118,6 +126,15 @@ public class BehaviourTreeView : GraphView
                 _tree.AddChild(parentView.Node, childView.Node);
             });
         }
+
+        if(graphViewChange.movedElements != null) 
+        {
+            nodes.ForEach((n) =>
+            {
+                NodeView view = n as NodeView;
+                view.SortChildren();
+            });
+        }
         return graphViewChange;
     }
 
@@ -128,11 +145,6 @@ public class BehaviourTreeView : GraphView
     public override void BuildContextualMenu(ContextualMenuPopulateEvent evt)
     {
         base.BuildContextualMenu(evt);
-    }
-
-    public void Test()
-    {
-
     }
 
     public void CreateNode(Type type, Rect grid)
@@ -153,5 +165,14 @@ public class BehaviourTreeView : GraphView
         nodeView.SetPosition(rect);
         nodeView.OnNodeSelected = OnNodeSelected;
         AddElement(nodeView);
+    }
+
+    public void UpdateNodeStates() 
+    {
+        nodes.ForEach(n =>
+        {
+            NodeView view = n as NodeView;
+            view.UpdateState();
+        });
     }
 }

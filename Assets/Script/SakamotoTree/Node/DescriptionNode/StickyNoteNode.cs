@@ -1,13 +1,15 @@
+//日本語対応
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
-public class DebugNode : ActionNode
+public class StickyNoteNode : DescriptionNode
 {
-    [SerializeField] private string _logSt;
     protected override void OnExit(Environment env)
     {
-        
+       
     }
 
     protected override void OnStart(Environment env)
@@ -17,7 +19,6 @@ public class DebugNode : ActionNode
 
     protected override State OnUpdate(Environment env)
     {
-        Debug.Log(_logSt);
-        return State.Success;
+        return State.Running;
     }
 }

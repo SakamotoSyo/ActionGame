@@ -23,7 +23,6 @@ public class Selector : ConditionNode
         State childState = NodeChildren[_count % NodeChildren.Count].update(env);
         while (childState == State.Failure)
         {
-            Debug.Log(childState);
             if (childState == State.Running) return State.Running;
             if (childState == State.Success)
             {

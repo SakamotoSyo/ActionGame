@@ -8,52 +8,47 @@ using System;
 [Serializable]
 public abstract class Node : ScriptableObject
 {
-    public enum State 
+    public enum State
     {
         Running,
         Failure,
         Success
     }
-   public Action<bool> CurrentStateView; 
-   [NonSerialized] private State sendState = State.Failure;
-   [NonSerialized] private State _state = State.Running;
-   [NonSerialized] private bool _started = false;
+    [NonSerialized] private State sendState = State.Failure;
+    [NonSerialized] public State CurrentState = State.Running;
+    [NonSerialized] public bool Started = false;
     public string Guid;
+    [Header("NodeÇÃñºëO")]
+    public string TitleName;
     public Vector2 Position;
+    public Vector3 NodeScale;
     [NonSerialized] protected CancellationTokenSource _token;
+    [Header("ê‡ñæ")]
+    [TextArea] public string Description;
 
-    public Node() 
+    public Node()
     {
+        TitleName = name;
         _token = new CancellationTokenSource();
     }
 
-    public State update(Environment env) 
+    public State update(Environment env)
     {
-        if (!_started) 
+        if (!Started)
         {
             OnStart(env);
-            _started = true;
+            Started = true;
         }
-        CurrentStateView?.Invoke(true);
 
-        _state = OnUpdate(env);
+        CurrentState = OnUpdate(env);
 
-        if (_state == State.Failure || _state == State.Success) 
+        if (CurrentState == State.Failure || CurrentState == State.Success)
         {
             OnExit(env);
-            _started = false;
-            CurrentStateView?.Invoke(false);
+            Started = false;
         }
 
-        TreePlayerLoop(_token.Token);
-
-        return _state;
-    }
-
-    private async void TreePlayerLoop(CancellationToken token) 
-    {
-        await UniTask.DelayFrame(2, cancellationToken: token);
-        CurrentStateView?.Invoke(false);
+        return CurrentState;
     }
 
     protected abstract void OnStart(Environment env);
@@ -63,5 +58,11 @@ public abstract class Node : ScriptableObject
     public void Cancel()
     {
         _token.Cancel();
+    }
+
+    public Node Clone()
+    {
+        Node node = Instantiate(this);
+        return node;
     }
 }

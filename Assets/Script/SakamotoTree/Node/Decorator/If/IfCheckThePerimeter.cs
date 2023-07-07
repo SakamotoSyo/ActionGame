@@ -24,9 +24,11 @@ public class IfCheckThePerimeter : DecoratorNode
         var dist = (env.MySelf.transform.position - env.Target.transform.position).sqrMagnitude;
         if (dist < _sensingDistance)
         {
+            if (_approachingState == State.Running) return Child.update(env);
             return _approachingState;
         }
 
+        if (_approachingState == State.Running) return Child.update(env);
         return _distanceState;
     }
 }

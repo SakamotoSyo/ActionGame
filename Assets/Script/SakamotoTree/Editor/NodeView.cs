@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.Experimental.GraphView;
 using System;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
+using UnityEditor;
 
 public class NodeView : UnityEditor.Experimental.GraphView.Node
 {
@@ -11,10 +14,9 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
     public Port Input;
     public Port Output;
 
-    public NodeView(Node node) 
+    public NodeView(Node node) : base("Assets/Script/SakamotoTree/Editor/NodeView.uxml")
     {
         Node = node;
-        title = node.name;
         viewDataKey = node.Guid;
 
         style.left = node.Position.x;
@@ -22,7 +24,16 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
 
         CreateInputPorts();
         CreateOutputPorts();
-        Node.CurrentStateView += StateSetColor;
+        SetUpNodeDesign();
+        this.AddManipulator(new ContextualMenuManipulator(BuildContextualMenu));
+
+        Label titleLabel = this.Q<Label>("title-label");
+        titleLabel.bindingPath = "TitleName";
+        titleLabel.Bind(new SerializedObject(node));
+
+        Label descriptionLabel = this.Q<Label>("description");
+        descriptionLabel.bindingPath = "Description";
+        descriptionLabel.Bind(new SerializedObject(node));
     }
 
     /// <summary>
@@ -32,21 +43,22 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
     {
         if (Node is ActionNode)
         {
-            Input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(bool));
+            Input = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
         }
         else if (Node is ConditionNode)
         {
-            Input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(bool));
+            Input = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
         }
         else if (Node is DecoratorNode) 
         {
-            Input = InstantiatePort(Orientation.Horizontal, Direction.Input, Port.Capacity.Single, typeof(bool));
+            Input = InstantiatePort(Orientation.Vertical, Direction.Input, Port.Capacity.Single, typeof(bool));
         }
 
         if (Input != null) 
         {
             Input.portName = "";
             Input.portColor = Color.red;
+            Input.style.flexDirection = FlexDirection.Column;
             inputContainer.Add(Input);
         }
     }
@@ -59,20 +71,21 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
         //ÇªÇÍÇºÇÍÇÃOutputPortÇçÏê¨
         if (Node is ConditionNode)
         {
-            Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Multi, typeof(bool));
+            Output = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Multi, typeof(bool));
         }
         else if (Node is RootNode)
         {
-            Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+            Output = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
         }
         else if (Node is DecoratorNode) 
         {
-            Output = InstantiatePort(Orientation.Horizontal, Direction.Output, Port.Capacity.Single, typeof(bool));
+            Output = InstantiatePort(Orientation.Vertical, Direction.Output, Port.Capacity.Single, typeof(bool));
         }
 
         if ( Output != null)
         {
             Output.portName = "";
+            Output.style.flexDirection = FlexDirection.ColumnReverse;
             outputContainer.Add(Output);
         }
     }
@@ -80,21 +93,33 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
     public override void SetPosition(Rect newPos)
     {
         base.SetPosition(newPos);
+        Undo.RecordObject(Node, "Behaviour Tree (Set Position");
         Node.Position.x = newPos.xMin;
         Node.Position.y = newPos.yMin;
+        EditorUtility.SetDirty(Node);
     }
 
-    public void StateSetColor(bool isStart) 
+    private void SetUpNodeDesign() 
     {
-        if (isStart)
+        if (Node is ActionNode)
         {
-            this.inputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);
-            this.outputContainer.style.backgroundColor = new Color(0f, 0.6f, 0.2f);
+            AddToClassList("action");
         }
-        else 
+        else if (Node is ConditionNode)
         {
-            this.inputContainer.style.backgroundColor = new Color(0.25f, 0.25f, 0.25f);
-            this.outputContainer.style.backgroundColor = new Color(0.25f, 0.25f, 0.25f);
+            AddToClassList("composite");
+        }
+        else if (Node is DecoratorNode)
+        {
+            AddToClassList("decorator");
+        }
+        else if (Node is RootNode)
+        {
+            AddToClassList("root");
+        }
+        else if (Node is StickyNoteNode) 
+        {
+            AddToClassList("notePad");
         }
     }
 
@@ -104,6 +129,43 @@ public class NodeView : UnityEditor.Experimental.GraphView.Node
         if (OnNodeSelected != null) 
         {
             OnNodeSelected.Invoke(this);
+        }
+    }
+
+    public void SortChildren() 
+    {
+        ConditionNode condition = Node as ConditionNode;
+        if (condition) 
+        {
+            condition.NodeChildren.Sort(SortChildren);
+        }
+    }
+
+    private int SortChildren(Node left, Node right) 
+    {
+        return left.Position.x < right.Position.x ? -1 : 1;
+    }
+
+    public void UpdateState() 
+    {
+        RemoveFromClassList("running");
+        RemoveFromClassList("failure");
+        RemoveFromClassList("success");
+
+        switch (Node.CurrentState)
+        {
+            case Node.State.Running:
+                if (Node.Started) 
+                {
+                    AddToClassList("running");
+                }
+                break;
+            case Node.State.Failure:
+                AddToClassList("failure");
+                break;
+            case Node.State.Success:
+                AddToClassList("success");
+                break;
         }
     }
 }

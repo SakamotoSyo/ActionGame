@@ -11,16 +11,12 @@ public class BehaviorTreeEditor : EditorWindow
     private BehaviourTreeView _treeView;
     private InspectorView _inspectorView;
 
-    //[MenuItem("BehaviorTreeEditor/ Editor")]
-    //public static void OpenWindow()
-    //{
-    //    BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
-    //    wnd.titleContent = new GUIContent("BehaviorTreeEditor");
-    //    Undo.undoRedoPerformed += () =>
-    //    {
-            
-    //    };
-    //}
+    [MenuItem("BehaviorTreeEditor/ Editor")]
+    public static void OpenWindow()
+    {
+        BehaviorTreeEditor wnd = GetWindow<BehaviorTreeEditor>();
+        wnd.titleContent = new GUIContent("BehaviorTreeEditor");
+    }
 
     [OnOpenAsset(0)]
     public static bool OnBaseGraphOpened(int instanceID, int line)
@@ -54,27 +50,52 @@ public class BehaviorTreeEditor : EditorWindow
         _treeView.SetEditorWindow(this);
         _treeView.OnNodeSelected = OnNodeSelectionChanged;
         _inspectorView = root.Q<InspectorView>();
-
-        //OnSelectionChange();
     }
 
-    private void OnNodeSelectionChanged(NodeView nodeView) 
+    private void OnNodeSelectionChanged(NodeView nodeView)
     {
         _inspectorView.UpdateSelection(nodeView);
     }
 
-    //private void OnSelectionChange()
-    //{
-    //    BehaviourTree tree = Selection.activeObject as BehaviourTree;
+    private void OnSelectionChange()
+    {
+        BehaviourTree tree = Selection.activeObject as BehaviourTree;
 
-    //    if (tree && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
-    //    {
-    //        _treeView.PopulateView(tree);
-    //    }
-    //}
+        if (!tree)
+        {
+            if (Selection.activeGameObject)
+            {
+                if (Selection.activeGameObject.TryGetComponent<BehaviourTreeRunner>(out var runner)) 
+                {
+                    tree = runner.CloneBehaviourTree;
+                }
+            }
+        }
+
+        if (Application.isPlaying)
+        {
+            if (tree)
+            {
+                _treeView.PopulateView(tree);
+            }
+        }
+        else
+        {
+            if (tree && AssetDatabase.CanOpenAssetInEditor(tree.GetInstanceID()))
+            {
+                _treeView.PopulateView(tree);
+            }
+        }
+
+    }
 
     public void RefarenceSetView(BehaviourTree tree)
     {
         _treeView.PopulateView(tree);
+    }
+
+    private void OnInspectorUpdate()
+    {
+        _treeView?.UpdateNodeStates();
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DownNode : ActionNode
 {
+    [SerializeField] private GameObject _enemyDownPrefab;
+    private Animator _animator;
     protected override void OnExit(Environment env)
     {
         
@@ -11,17 +13,15 @@ public class DownNode : ActionNode
 
     protected override void OnStart(Environment env)
     {
-        env.MySelfAnim.Play("Down");
-        env.MySelfRb.velocity = Vector3.zero;
-        Debug.Log("Ž€‚ñ‚¾");
+        var enemyObj = Object.Instantiate(_enemyDownPrefab, env.MySelf.transform.position, env.MySelf.transform.rotation);
+        Destroy(enemyObj, 2f);
+        _animator = enemyObj.GetComponent<Animator>();
     }
 
     protected override State OnUpdate(Environment env)
     {
-        if (env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.99) 
-        {
-            Destroy(env.MySelf);
-        }
+        Destroy(env.MySelf, 2f);
+        env.MySelf.SetActive(false);
         return State.Running;
     }
 }

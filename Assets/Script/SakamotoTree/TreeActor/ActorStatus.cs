@@ -13,8 +13,8 @@ public class ActorStatus
 
     public ActorStatus() 
     {
-        _maxHp.Value = 100;
-        _currentHp.Value = 100;
+        _maxHp.Value = 100000;
+        _currentHp.Value = 100000;
     }
 
     public void ReceiveDamage(float damage) 

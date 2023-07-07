@@ -9,6 +9,7 @@ using System;
 public class BehaviourTreeRunner : MonoBehaviour, IDamageble
 {
     public ActorStatus ActorStatus => _actorStatus;
+    public BehaviourTree CloneBehaviourTree => _cloneBehaviour;
 
     [SerializeField] private BehaviourTree _behaviour;
     [SerializeField] private Animator _conditionAnim;
@@ -46,6 +47,7 @@ public class BehaviourTreeRunner : MonoBehaviour, IDamageble
         {
             _cloneBehaviour.Nodes[i].Cancel();
         }
+        GameManager.AddScore();
     }
 
     public void ReceiveDamage(float damage, Vector3 myselfPosition)

@@ -43,6 +43,7 @@ public class AttackNode : ActionNode
     /// <returns></returns>
     protected override State OnUpdate(Environment env)
     {
+        Debug.Log(_isComplete);
         if (_isComplete && _isAnimation)
         {
             _isComplete = false;
@@ -52,6 +53,7 @@ public class AttackNode : ActionNode
         else if (!_isAnimation)
         {
             _isAnimation = true;
+            Debug.Log("çUåÇäJén");
             AttackAnim(env, _token.Token);
         }
 
