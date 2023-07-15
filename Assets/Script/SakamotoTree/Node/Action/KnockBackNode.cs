@@ -19,7 +19,6 @@ public class KnockBackNode : ActionNode
 
     protected override State OnUpdate(Environment env)
     {
-        Debug.Log($"knockƒoƒbƒN{env.MySelfRb}");
         Vector3 distination = (env.MySelf.transform.position - env.Target.transform.position).normalized;
         env.MySelfRb.AddForce(distination * _knockBackPower, ForceMode.Impulse);
         return State.Success;

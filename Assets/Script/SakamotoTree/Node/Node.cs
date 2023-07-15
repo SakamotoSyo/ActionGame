@@ -28,7 +28,6 @@ public abstract class Node : ScriptableObject
 
     public Node()
     {
-        TitleName = name;
         _token = new CancellationTokenSource();
     }
 
