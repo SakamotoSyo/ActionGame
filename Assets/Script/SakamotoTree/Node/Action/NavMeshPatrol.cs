@@ -5,6 +5,9 @@ using System;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
+/// <summary>
+/// ŽüˆÍ‚ðœpœj‚³‚¹‚éNodeClass
+/// </summary>
 public class NavMeshPatrol : ActionNode
 {
     [Header("œpœj‚·‚é”ÍˆÍ")]

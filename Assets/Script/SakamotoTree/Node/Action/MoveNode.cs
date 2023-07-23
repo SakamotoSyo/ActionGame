@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// ˆê’è‚Ì‹——£‚Ü‚Å‘ÎÛ‚É‹ß‚Ã‚­‚½‚ß‚ÌƒNƒ‰ƒX
+/// </summary>
 public class MoveNode : ActionNode
 {
     [SerializeField] private int _moveSpeed;
@@ -25,6 +28,8 @@ public class MoveNode : ActionNode
 
     protected override State OnUpdate(Environment env)
     {
+        if (env.ActorStateType == ActorStateType.Attack) return State.Success;
+
         var dist = (env.MySelf.transform.position - env.Target.transform.position).sqrMagnitude;
         if (dist < _rangeNum)
         {

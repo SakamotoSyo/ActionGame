@@ -25,10 +25,12 @@ public class IfCheckThePerimeter : DecoratorNode
         if (dist < _sensingDistance)
         {
             if (_approachingState == State.Running) return Child.update(env);
+            Child.CurrentState = _approachingState;
             return _approachingState;
         }
 
-        if (_approachingState == State.Running) return Child.update(env);
+        if (_distanceState == State.Running) return Child.update(env);
+        Child.CurrentState = _distanceState;
         return _distanceState;
     }
 }
