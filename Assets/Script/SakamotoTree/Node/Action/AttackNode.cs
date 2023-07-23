@@ -28,22 +28,16 @@ public class AttackNode : ActionNode
     [NonSerialized] private RaycastHit _hit;
     protected override void OnExit(Environment env)
     {
-        
+
     }
 
     protected override void OnStart(Environment env)
     {
-       
+
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="env"></param>
-    /// <returns></returns>
     protected override State OnUpdate(Environment env)
     {
-        Debug.Log(_isComplete);
         if (_isComplete && _isAnimation)
         {
             _isComplete = false;
@@ -53,7 +47,6 @@ public class AttackNode : ActionNode
         else if (!_isAnimation)
         {
             _isAnimation = true;
-            Debug.Log("攻撃開始");
             AttackAnim(env, _token.Token);
         }
 
@@ -68,8 +61,10 @@ public class AttackNode : ActionNode
     private async void AttackAnim(Environment env, CancellationToken token)
     {
         env.MySelfAnim.SetTrigger(_attackParam);
+        env.AddState(ActorStateType.Attack);
         await UniTask.WaitUntil(() => !env.MySelfAnim.IsInTransition(0), cancellationToken: token);
         await UniTask.WaitUntil(() => env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= _attackEndNum, cancellationToken: token);
+        env.RemoveState(ActorStateType.Attack);
         _isComplete = true;
     }
 
@@ -77,22 +72,32 @@ public class AttackNode : ActionNode
     /// 攻撃が相手に当たったか判定し処理を行うメソッド
     /// </summary>
     /// <param name="env"></param>
-    private void AttackEffect(Environment env) 
+    private void AttackEffect(Environment env)
     {
         if (env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime >= _collisionDetectionStart &&
            env.MySelfAnim.GetCurrentAnimatorStateInfo(0).normalizedTime <= _collisionDetectionEnd)
         {
-            BehaviorHelper.OnDrawSphere(env.MySelf.transform, _radius, Vector3.up, _maxDistance);
-            var isHit = Physics.SphereCast(env.MySelf.transform.position + _offset, _radius,
-                env.MySelf.transform.forward, out _hit, _maxDistance);
+            ColliderHitCheck(env);
+        }
+    }
 
-            if (isHit)
+    /// <summary>
+    /// 特定のColliderに当たったかどうかCheckする
+    /// </summary>
+    /// <param name="env"></param>
+    private void ColliderHitCheck(Environment env)
+    {
+        var myselfTransform = env.MySelf.transform;
+        BehaviorHelper.OnDrawSphere(env.MySelf.transform, _radius, Vector3.up, _maxDistance);
+        var HitColliderArray = Physics.OverlapSphere(myselfTransform.position + _offset + myselfTransform.forward, _radius);
+        if (HitColliderArray.Length == 0) return;
+
+        for (int i = 0; i < HitColliderArray.Length; i++) 
+        {
+            if (HitColliderArray[i].gameObject.TryGetComponent(out IDamageble damageCs))
             {
-                if (_hit.collider.gameObject.TryGetComponent(out IDamageble damageCs))
-                {
-                    Debug.Log("10のダメージを与えた");
-                    damageCs.ReceiveDamage(_damage, env.MySelf.transform.position);
-                }
+                Debug.Log("10のダメージを与えた");
+                damageCs.ReceiveDamage(_damage, env.MySelf.transform.position);
             }
         }
     }
